@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biblioteca Escolar - Sistema de Gestão Completo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --crimson-red: #DC143C;
+            --light-crimson: #FF6B7A;
+            --dark-crimson: #B91C3C;
+            --off-white: #FEFEFE;
+            --light-gray: #F8F9FA;
+            --medium-gray: #6B7280;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--off-white) 0%, var(--light-gray) 100%);
+            min-height: 100vh;
+        }
+        
+        .serif-font {
+            font-family: 'Playfair Display', serif;
+        }
+        
+        .crimson-gradient {
+            background: linear-gradient(135deg, var(--crimson-red) 0%, var(--dark-crimson) 100%);
+        }
+        
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(220, 20, 60, 0.1), 0 10px 10px -5px rgba(220, 20, 60, 0.04);
+        }
+        
+        .animate-fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .book-pattern {
+            background-image: 
+                radial-gradient(circle at 25% 25%, rgba(220, 20, 60, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(220, 20, 60, 0.05) 0%, transparent 50%);
+        }
+        
+        .sidebar-item {
+            opacity: 0;
+            transform: translateX(-50px);
+        }
+        
+        .main-content {
+            opacity: 0;
+            transform: scale(0.95);
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        .modal {
+            backdrop-filter: blur(4px);
+        }
+        
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-xl">
+        <div class="h-full flex flex-col">
+            <!-- Logo -->
+            <div class="p-6 border-b border-gray-200">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 crimson-gradient rounded-lg flex items-center justify-center">
+                        <span class="text-white text-xl font-bold">📚</span>
+                    </div>
+                    <div>
+                        <h1 class="serif-font text-xl font-bold text-gray-900">Biblioteca</h1>
+                        <p class="text-sm text-gray-600">Escolar</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <nav class="flex-1 p-4">
+                <ul class="space-y-2">
+                    <li class="sidebar-item">
+                        <a href="#" onclick="showSection('dashboard')" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg crimson-gradient text-white shadow-lg">
+                            <span class="text-lg">📊</span>
+                            <span class="font-medium">Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#" onclick="showSection('livros')" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-red-50 hover:text-red-600 transition-all duration-200">
+                            <span class="text-lg">📚</span>
+                            <span class="font-medium">Livros</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#" onclick="showSection('autores')" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-red-50 hover:text-red-600 transition-all duration-200">
+                            <span class="text-lg">✍️</span>
+                            <span class="font-medium">Autores</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#" onclick="showSection('editoras')" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-red-50 hover:text-red-600 transition-all duration-200">
+                            <span class="text-lg">🏢</span>
+                            <span class="font-medium">Editoras</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#" onclick="showSection('utentes')" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-red-50 hover:text-red-600 transition-all duration-200">
+                            <span class="text-lg">👥</span>
+                            <span class="font-medium">Utentes</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#" onclick="showSection('requisicoes')" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-red-50 hover:text-red-600 transition-all duration-200">
+                            <span class="text-lg">📖</span>
+                            <span class="font-medium">Requisições</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- Footer -->
+            <div class="p-4 border-t border-gray-200">
+                <div class="text-center text-sm text-gray-500">
+                    <p>© 2024 Biblioteca Escolar</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="ml-64 flex-1 flex flex-col">
+        <!-- Header -->
+        <header class="bg-white shadow-sm border-b border-gray-200">
+            <div class="px-8">
+                <div class="flex items-center justify-between h-16">
+                    <div class="flex items-center space-x-4">
+                        <h2 id="page-title" class="serif-font text-2xl font-bold text-gray-900">Dashboard</h2>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <button class="p-2 rounded-lg text-gray-600 hover:text-red-600 hover:bg-red-50 transition-colors">
+                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5-5-5h5v-12" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content -->
+        <main class="flex-1 p-8 book-pattern">
+            <!-- Dashboard Section -->
+            <div id="dashboard" class="main-content">
+                <!-- Header -->
+                <div class="mb-8">
+                    <h1 class="serif-font text-4xl font-bold text-gray-900 mb-2">
+                        Bem-vindo à Biblioteca Escolar
+                    </h1>
+                    <p class="text-gray-600 text-lg">
+                        Gestão completa do acervo e requisições
+                    </p>
+                </div>
+
+                <!-- Stats Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="stat-card bg-white rounded-xl shadow-sm border border-gray-200 p-6 card-hover cursor-pointer" onclick="showSection('livros')">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600 mb-1">Total de Livros</p>
+                                <p class="text-3xl font-bold text-gray-900">1,247</p>
+                            </div>
+                            <div class="w-12 h-12 bg-red-500 rounded-lg flex items-center justify-center text-white text-xl">
+                                📚
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card bg-white rounded-xl shadow-sm border border-gray-200 p-6 card-hover cursor-pointer" onclick="showSection('utentes')">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600 mb-1">Utentes Registados</p>
+                                <p class="text-3xl font-bold text-gray-900">892</p>
+                            </div>
+                            <div class="w-12 h-12 bg-red-400 rounded-lg flex items-center justify-center text-white text-xl">
+                                👥
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card bg-white rounded-xl shadow-sm border border-gray-200 p-6 card-hover cursor-pointer" onclick="showSection('requisicoes')">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600 mb-1">Requisições Ativas</p>
+                                <p class="text-3xl font-bold text-gray-900">156</p>
+                            </div>
+                            <div class="w-12 h-12 bg-red-300 rounded-lg flex items-center justify-center text-white text-xl">
+                                📖
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card bg-white rounded-xl shadow-sm border border-gray-200 p-6 card-hover cursor-pointer" onclick="showSection('livros')">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600 mb-1">Livros Disponíveis</p>
+                                <p class="text-3xl font-bold text-gray-900">1,091</p>
+                            </div>
+                            <div class="w-12 h-12 bg-red-200 rounded-lg flex items-center justify-center text-xl">
+                                📖
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
+                    <h2 class="serif-font text-2xl font-bold text-gray-900 mb-4">Ações Rápidas</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="flex items-center space-x-3 p-4 border-2 border-dashed border-red-300 rounded-lg hover:border-red-500 hover:bg-red-50 transition-colors cursor-pointer" onclick="openModal('add-book')">
+                            <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                                <span class="text-red-600 text-xl">➕</span>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-gray-900">Adicionar Livro</h3>
+                                <p class="text-sm text-gray-600">Registar novo livro no sistema</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center space-x-3 p-4 border-2 border-dashed border-red-300 rounded-lg hover:border-red-500 hover:bg-red-50 transition-colors cursor-pointer" onclick="openModal('add-requisicao')">
+                            <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                                <span class="text-red-600 text-xl">📤</span>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-gray-900">Nova Requisição</h3>
+                                <p class="text-sm text-gray-600">Emprestar livro a utente</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center space-x-3 p-4 border-2 border-dashed border-red-300 rounded-lg hover:border-red-500 hover:bg-red-50 transition-colors cursor-pointer" onclick="openModal('add-utente')">
+                            <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                                <span class="text-red-600 text-xl">👤</span>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-gray-900">Registar Utente</h3>
+                                <p class="text-sm text-gray-600">Adicionar novo utilizador</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                    <h2 class="serif-font text-2xl font-bold text-gray-900 mb-4">Atividade Recente</h2>
+                    <div class="space-y-4">
+                        <div class="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
+                            <div class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                                <span class="text-red-600">📚</span>
+                            </div>
+                            <div class="flex-1">
+                                <p class="font-medium text-gray-900">Sistema iniciado com sucesso</p>
+                                <p class="text-sm text-gray-600">Todos os módulos estão funcionando corretamente</p>
+                            </div>
+                            <span class="text-sm text-gray-500">Agora</span>
+                        </div>
+
+                        <div class="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
+                            <div class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                                <span class="text-red-600">✅</span>
+                            </div>
+                            <div class="flex-1">
+                                <p class="font-medium text-gray-900">Base de dados conectada</p>
+                                <p class="text-sm text-gray-600">Conexão com Supabase estabelecida</p>
+                            </div>
+                            <span class="text-sm text-gray-500">Agora</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Livros Section -->
+            <div id="livros" class="main-content hidden">
+                <!-- Header -->
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
+                    <div>
+                        <h1 class="serif-font text-3xl font-bold text-gray-900 mb-2">Gestão de Livros</h1>
+                        <p class="text-gray-600">Gerir o acervo da biblioteca escolar</p>
+                    </div>
+                    <button onclick="openModal('add-book')" class="mt-4 sm:mt-0 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white crimson-gradient hover:shadow-lg transition-all duration-200">
+                        <span class="mr-2">➕</span>
+                        Adicionar Livro
+                    </button>
+                </div>
+
+                <!-- Search and Filters -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <div class="flex-1">
+                            <div class="relative">
+                                <input type="text" id="book-search" placeholder="Pesquisar por título, autor ou ISBN..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500" onkeyup="searchBooks()">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="filterBooks('todos')" id="filter-todos" class="px-4 py-2 rounded-lg font-medium bg-red-600 text-white">Todos</button>
+                            <button onclick="filterBooks('disponiveis')" id="filter-disponiveis" class="px-4 py-2 rounded-lg font-medium bg-gray-100 text-gray-700 hover:bg-gray-200">Disponíveis</button>
+                            <button onclick="filterBooks('requisitados')" id="filter-requisitados" class="px-4 py-2 rounded-lg font-medium bg-gray-100 text-gray-700 hover:bg-gray-200">Requisitados</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Books Grid -->
+                <div id="books-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    <!-- Books will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Autores Section -->
+            <div id="autores" class="main-content hidden">
+                <!-- Header -->
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
+                    <div>
+                        <h1 class="serif-font text-3xl font-bold text-gray-900 mb-2">Gestão de Autores</h1>
+                        <p class="text-gray-600">Gerir os autores do acervo da biblioteca</p>
+                    </div>
+                    <button onclick="openModal('add-autor')" class="mt-4 sm:mt-0 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white crimson-gradient hover:shadow-lg transition-all duration-200">
+                        <span class="mr-2">➕</span>
+                        Adicionar Autor
+                    </button>
+                </div>
+
+                <!-- Search -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+                    <div class="relative">
+                        <input type="text" id="autor-search" placeholder="Pesquisar por nome ou país..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500" onkeyup="searchAutores()">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Authors Table -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Autor</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">País</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nº de Livros</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="autores-table" class="bg-white divide-y divide-gray-200">
+                                <!-- Authors will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Editoras Section -->
+            <div id="editoras" class="main-content hidden">
+                <!-- Header -->
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
+                    <div>
+                        <h1 class="serif-font text-3xl font-bold text-gray-900 mb-2">Gestão de Editoras</h1>
+                        <p class="text-gray-600">Gerir as editoras do acervo da biblioteca</p>
+                    </div>
+                    <button onclick="openModal('add-editora')" class="mt-4 sm:mt-0 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white crimson-gradient hover:shadow-lg transition-all duration-200">
+                        <span class="mr-2">➕</span>
+                        Adicionar Editora
+                    </button>
+                </div>
+
+                <!-- Search -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+                    <div class="relative">
+                        <input type="text" id="editora-search" placeholder="Pesquisar por nome ou país..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500" onkeyup="searchEditoras()">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Publishers Table -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Editora</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">País</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contacto</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="editoras-table" class="bg-white divide-y divide-gray-200">
+                                <!-- Publishers will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Utentes Section -->
+            <div id="utentes" class="main-content hidden">
+                <!-- Header -->
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
+                    <div>
+                        <h1 class="serif-font text-3xl font-bold text-gray-900 mb-2">Gestão de Utentes</h1>
+                        <p class="text-gray-600">Gerir os utilizadores da biblioteca escolar</p>
+                    </div>
+                    <button onclick="openModal('add-utente')" class="mt-4 sm:mt-0 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white crimson-gradient hover:shadow-lg transition-all duration-200">
+                        <span class="mr-2">➕</span>
+                        Adicionar Utente
+                    </button>
+                </div>
+
+                <!-- Search -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+                    <div class="relative">
+                        <input type="text" id="utente-search" placeholder="Pesquisar por nome, email ou NIF..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500" onkeyup="searchUtentes()">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Users Table -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Utente</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contacto</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">NIF</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="utentes-table" class="bg-white divide-y divide-gray-200">
+                                <!-- Users will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Requisições Section -->
+            <div id="requisicoes" class="main-content hidden">
+                <!-- Header -->
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
+                    <div>
+                        <h1 class="serif-font text-3xl font-bold text-gray-900 mb-2">Gestão de Requisições</h1>
+                        <p class="text-gray-600">Gerir os empréstimos e devoluções de livros</p>
+                    </div>
+                    <button onclick="openModal('add-requisicao')" class="mt-4 sm:mt-0 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white crimson-gradient hover:shadow-lg transition-all duration-200">
+                        <span class="mr-2">📤</span>
+                        Nova Requisição
+                    </button>
+                </div>
+
+                <!-- Search and Filters -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <div class="flex-1">
+                            <div class="relative">
+                                <input type="text" id="requisicao-search" placeholder="Pesquisar por utente ou livro..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500" onkeyup="searchRequisicoes()">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="filterRequisicoes('todas')" id="req-filter-todas" class="px-4 py-2 rounded-lg font-medium bg-red-600 text-white">Todas</button>
+                            <button onclick="filterRequisicoes('ativas')" id="req-filter-ativas" class="px-4 py-2 rounded-lg font-medium bg-gray-100 text-gray-700 hover:bg-gray-200">Ativas</button>
+                            <button onclick="filterRequisicoes('devolvidas')" id="req-filter-devolvidas" class="px-4 py-2 rounded-lg font-medium bg-gray-100 text-gray-700 hover:bg-gray-200">Devolvidas</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Requests Table -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Utente</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Livro</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Data Requisição</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Data Devolução</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="requisicoes-table" class="bg-white divide-y divide-gray-200">
+                                <!-- Requests will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal -->
+    <div id="modal" class="fixed inset-0 bg-black bg-opacity-50 modal hidden z-50 flex items-center justify-center">
+        <div class="bg-white rounded-xl shadow-xl max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 id="modal-title" class="text-lg font-semibold text-gray-900">Adicionar Novo Item</h3>
+                    <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                <div id="modal-content">
+                    <!-- Modal content will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="biblioteca-script.js"></script>
+</body>
+</html>
