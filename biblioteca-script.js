@@ -1,59 +1,290 @@
-// Dados mockados para demonstração
-let livros = [
-    { id: 1, titulo: "Dom Quixote", autor: "Miguel de Cervantes", ano: 1605, isbn: "978-3-16-148410-0", disponivel: true, genero: "Clássico" },
-    { id: 2, titulo: "Os Lusíadas", autor: "Luís de Camões", ano: 1572, isbn: "978-85-359-0271-2", disponivel: false, genero: "Epopeia" },
-    { id: 3, titulo: "Memorial do Convento", autor: "José Saramago", ano: 1982, isbn: "978-972-21-0921-3", disponivel: true, genero: "Romance" },
-    { id: 4, titulo: "A Cidade e as Serras", autor: "Eça de Queirós", ano: 1901, isbn: "978-972-25-0221-0", disponivel: true, genero: "Romance" },
-    { id: 5, titulo: "Ensaio Sobre a Cegueira", autor: "José Saramago", ano: 1995, isbn: "978-972-21-0922-0", disponivel: false, genero: "Romance" },
-    { id: 6, titulo: "O Primo Basílio", autor: "Eça de Queirós", ano: 1878, isbn: "978-972-25-0222-7", disponivel: true, genero: "Romance" },
-    { id: 7, titulo: "Mensagem", autor: "Fernando Pessoa", ano: 1934, isbn: "978-972-25-0223-4", disponivel: true, genero: "Poesia" },
-    { id: 8, titulo: "Amor de Perdição", autor: "Camilo Castelo Branco", ano: 1862, isbn: "978-972-25-0224-1", disponivel: true, genero: "Romance" }
-];
+const SUPABASE_URL = 'https://twfmnwjpciqybhpilksq.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR3Zm1ud2pwY2lxeWJocGlsa3NxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk4MTM1MzYsImV4cCI6MjA3NTM4OTUzNn0.yaZQwrHulES0ym4TjPQc9cEtuixounQZb5WrOqqz3KQ';
 
-let autores = [
-    { id: 1, nome: "Miguel de Cervantes", pais: "Espanha", livros: 1 },
-    { id: 2, nome: "Luís de Camões", pais: "Portugal", livros: 1 },
-    { id: 3, nome: "José Saramago", pais: "Portugal", livros: 2 },
-    { id: 4, nome: "Eça de Queirós", pais: "Portugal", livros: 2 },
-    { id: 5, nome: "Fernando Pessoa", pais: "Portugal", livros: 1 },
-    { id: 6, nome: "Camilo Castelo Branco", pais: "Portugal", livros: 1 }
-];
+const supabaseClient = window.supabase?.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-let editoras = [
-    { id: 1, nome: "Porto Editora", pais: "Portugal", email: "info@portoeditora.pt", telefone: "22 507 34 00" },
-    { id: 2, nome: "Caminho", pais: "Portugal", email: "caminho@grupo.portoeditora.pt", telefone: "21 940 83 00" },
-    { id: 3, nome: "Dom Quixote", pais: "Portugal", email: "info@domquixote.pt", telefone: "21 397 55 00" },
-    { id: 4, nome: "Presença", pais: "Portugal", email: "presenca@portoeditora.pt", telefone: "21 940 83 50" },
-    { id: 5, nome: "Europa-América", pais: "Portugal", email: "europa@europa-america.pt", telefone: "21 397 55 10" }
-];
+let livros = [];
+let autores = [];
+let editoras = [];
+let utentes = [];
+let requisicoes = [];
 
-let utentes = [
-    { id: 1, nome: "João Silva", email: "joao.silva@email.com", nif: "123456789", telefone: "912345678", estado: "Ativo" },
-    { id: 2, nome: "Maria Santos", email: "maria.santos@email.com", nif: "987654321", telefone: "923456789", estado: "Ativo" },
-    { id: 3, nome: "Pedro Oliveira", email: "pedro.oliveira@email.com", nif: "456789123", telefone: "934567890", estado: "Ativo" },
-    { id: 4, nome: "Ana Costa", email: "ana.costa@email.com", nif: "789123456", telefone: "945678901", estado: "Ativo" },
-    { id: 5, nome: "Carlos Pereira", email: "carlos.pereira@email.com", nif: "321654987", telefone: "956789012", estado: "Ativo" },
-    { id: 6, nome: "Sofia Ferreira", email: "sofia.ferreira@email.com", nif: "654987321", telefone: "967890123", estado: "Ativo" }
-];
+let livrosRaw = [];
+let autoresRaw = [];
+let editorasRaw = [];
+let utentesRaw = [];
+let requisicoesRaw = [];
+let exemplaresRaw = [];
 
-let requisicoes = [
-    { id: 1, utente: "João Silva", livro: "Os Lusíadas", dataRequisicao: "2024-10-15", dataDevolucao: null, estado: "Ativo" },
-    { id: 2, utente: "Maria Santos", livro: "Ensaio Sobre a Cegueira", dataRequisicao: "2024-10-10", dataDevolucao: null, estado: "Ativo" },
-    { id: 3, utente: "Pedro Oliveira", livro: "Dom Quixote", dataRequisicao: "2024-10-05", dataDevolucao: "2024-10-20", estado: "Devolvido" },
-    { id: 4, utente: "Ana Costa", livro: "Memorial do Convento", dataRequisicao: "2024-10-18", dataDevolucao: null, estado: "Ativo" },
-    { id: 5, utente: "Carlos Pereira", livro: "A Cidade e as Serras", dataRequisicao: "2024-10-12", dataDevolucao: "2024-10-25", estado: "Devolvido" }
-];
+let realtimeChannel = null;
+let hasRealtimeBeenAnnounced = false;
 
-// Variáveis de estado
 let currentSection = 'dashboard';
 let currentBookFilter = 'todos';
 let currentReqFilter = 'todas';
 
-// Inicialização
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', () => {
     initializeAnimations();
-    loadDashboardData();
+    bootstrapData();
 });
+
+async function bootstrapData() {
+    if (!supabaseClient) {
+        console.error('Supabase client não foi inicializado.');
+        showNotification('Não foi possível inicializar o Supabase.', 'error');
+        return;
+    }
+
+    try {
+        await Promise.all([
+            fetchAutoresRaw(),
+            fetchEditorasRaw(),
+            fetchUtentesRaw(),
+            fetchLivrosRaw(),
+            fetchExemplaresRaw(),
+            fetchRequisicoesRaw(),
+        ]);
+        syncViewState();
+        renderAllSections();
+        setupRealtimeChannel();
+    } catch (error) {
+        console.error('Erro ao carregar dados iniciais', error);
+        showNotification(`Erro ao carregar dados iniciais: ${error.message}`, 'error');
+    }
+}
+
+async function fetchLivrosRaw() {
+    const { data, error } = await supabaseClient
+        .from('livro')
+        .select('li_cod, li_titulo, li_ano, li_isbn, li_genero, li_autor')
+        .order('li_titulo', { ascending: true });
+    if (error) throw error;
+    livrosRaw = data ?? [];
+}
+
+async function fetchAutoresRaw() {
+    const { data, error } = await supabaseClient
+        .from('autor')
+        .select('au_cod, au_nome, au_pais')
+        .order('au_nome', { ascending: true });
+    if (error) throw error;
+    autoresRaw = data ?? [];
+}
+
+async function fetchEditorasRaw() {
+    const { data, error } = await supabaseClient
+        .from('editora')
+        .select('ed_cod, ed_nome, ed_pais, ed_email, ed_tlm')
+        .order('ed_nome', { ascending: true });
+    if (error) throw error;
+    editorasRaw = data ?? [];
+}
+
+async function fetchUtentesRaw() {
+    const { data, error } = await supabaseClient
+        .from('utente')
+        .select('ut_cod, ut_nome, ut_email, ut_tlm, ut_nif')
+        .order('ut_nome', { ascending: true });
+    if (error) throw error;
+    utentesRaw = data ?? [];
+}
+
+async function fetchRequisicoesRaw() {
+    const { data, error } = await supabaseClient
+        .from('requisicao')
+        .select('re_cod, re_ut_cod, re_lex_cod, re_data_requisicao, re_data_devolucao')
+        .order('re_data_requisicao', { ascending: false });
+    if (error) throw error;
+    requisicoesRaw = data ?? [];
+}
+
+async function fetchExemplaresRaw() {
+    const { data, error } = await supabaseClient
+        .from('livro_exemplar')
+        .select('lex_cod, lex_li_cod, lex_disponivel');
+    if (error) throw error;
+    exemplaresRaw = data ?? [];
+}
+
+function syncViewState() {
+    livros = livrosRaw.map((row) => ({
+        id: row.li_cod,
+        titulo: row.li_titulo ?? 'Sem título',
+        autorId: row.li_autor ?? null,
+        autor: getAutorName(row.li_autor),
+        ano: row.li_ano ?? '',
+        isbn: row.li_isbn ?? '',
+        genero: row.li_genero ?? 'Não definido',
+        disponivel: isLivroDisponivel(row.li_cod),
+    }));
+
+    autores = autoresRaw.map((row) => ({
+        id: row.au_cod,
+        nome: row.au_nome ?? 'Autor',
+        pais: row.au_pais ?? 'Não especificado',
+        livros: livrosRaw.filter((livro) => livro.li_autor === row.au_cod).length,
+    }));
+
+    editoras = editorasRaw.map((row) => ({
+        id: row.ed_cod,
+        nome: row.ed_nome ?? 'Editora',
+        pais: row.ed_pais ?? 'Não especificado',
+        email: row.ed_email || null,
+        telefone: row.ed_tlm || null,
+    }));
+
+    utentes = utentesRaw.map((row) => ({
+        id: row.ut_cod,
+        nome: row.ut_nome ?? 'Utente',
+        email: row.ut_email ?? '',
+        telefone: row.ut_tlm ?? '',
+        nif: row.ut_nif ?? '',
+        estado: 'Ativo',
+    }));
+
+    requisicoes = requisicoesRaw.map((row) => ({
+        id: row.re_cod,
+        utenteId: row.re_ut_cod,
+        exemplarId: row.re_lex_cod,
+        utente: getUtenteName(row.re_ut_cod),
+        livro: getLivroTitleByExemplar(row.re_lex_cod),
+        dataRequisicao: row.re_data_requisicao,
+        dataDevolucao: row.re_data_devolucao,
+        estado: row.re_data_devolucao ? 'Devolvido' : 'Ativo',
+    }));
+}
+
+function renderAllSections() {
+    loadDashboardData();
+    loadBooks();
+    loadAutores();
+    loadEditoras();
+    loadUtentes();
+    loadRequisicoes();
+}
+
+function getAutorName(autorId) {
+    if (!autorId) return 'Autor desconhecido';
+    const autor = autoresRaw.find((item) => item.au_cod === autorId);
+    return autor?.au_nome ?? 'Autor desconhecido';
+}
+
+function isLivroDisponivel(livroId) {
+    if (!livroId) return false;
+    return exemplaresRaw.some((ex) => ex.lex_li_cod === livroId && ex.lex_disponivel);
+}
+
+function getUtenteName(utenteId) {
+    if (!utenteId) return 'Utente';
+    const utente = utentesRaw.find((item) => item.ut_cod === utenteId);
+    return utente?.ut_nome ?? `Utente #${utenteId}`;
+}
+
+function getLivroTitleByExemplar(exemplarId) {
+    const exemplar = exemplaresRaw.find((ex) => ex.lex_cod === exemplarId);
+    if (!exemplar) return `Exemplar #${exemplarId}`;
+    const livro = livrosRaw.find((row) => row.li_cod === exemplar.lex_li_cod);
+    return livro?.li_titulo ?? `Livro #${exemplar?.lex_li_cod ?? exemplarId}`;
+}
+
+function getDisponiveisCount() {
+    return exemplaresRaw.filter((ex) => ex.lex_disponivel).length;
+}
+
+function getAvailableExemplares() {
+    return exemplaresRaw.filter((ex) => ex.lex_disponivel);
+}
+
+function setupRealtimeChannel() {
+    if (!supabaseClient || realtimeChannel) return;
+
+    realtimeChannel = supabaseClient
+        .channel('public:biblioteca-dashboard')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'livro' }, () => refreshFromSupabase(['livro', 'livro_exemplar']))
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'livro_exemplar' }, () => refreshFromSupabase(['livro_exemplar']))
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'autor' }, () => refreshFromSupabase(['autor', 'livro']))
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'editora' }, () => refreshFromSupabase(['editora']))
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'utente' }, () => refreshFromSupabase(['utente', 'requisicao']))
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'requisicao' }, () => refreshFromSupabase(['requisicao', 'livro_exemplar']))
+        .subscribe((status) => {
+            if (status === 'SUBSCRIBED' && !hasRealtimeBeenAnnounced) {
+                hasRealtimeBeenAnnounced = true;
+                showNotification('Ligação em tempo real ativa com o Supabase.', 'success');
+            }
+        });
+}
+
+async function refreshFromSupabase(tables) {
+    if (!supabaseClient) return;
+    const unique = new Set(tables);
+    const promises = [];
+
+    if (unique.has('livro')) promises.push(fetchLivrosRaw());
+    if (unique.has('autor')) promises.push(fetchAutoresRaw());
+    if (unique.has('editora')) promises.push(fetchEditorasRaw());
+    if (unique.has('utente')) promises.push(fetchUtentesRaw());
+    if (unique.has('requisicao')) promises.push(fetchRequisicoesRaw());
+    if (unique.has('livro_exemplar') || unique.has('livro') || unique.has('requisicao')) {
+        promises.push(fetchExemplaresRaw());
+    }
+
+    if (!promises.length) return;
+
+    try {
+        await Promise.all(promises);
+        syncViewState();
+        renderAllSections();
+    } catch (error) {
+        console.error('Erro ao sincronizar dados em tempo real', error);
+    }
+}
+
+function updateStatValue(id, value) {
+    const el = document.getElementById(id);
+    if (el) {
+        el.textContent = value;
+    }
+}
+
+async function ensureAutorExists(nome, pais) {
+    if (!supabaseClient || !nome) return null;
+    const normalized = nome.trim().toLowerCase();
+    const existing = autoresRaw.find((autor) => (autor.au_nome ?? '').toLowerCase() === normalized);
+    if (existing) return existing.au_cod;
+
+    const { data, error } = await supabaseClient
+        .from('autor')
+        .insert({ au_nome: nome.trim(), au_pais: pais || null })
+        .select('au_cod, au_nome, au_pais')
+        .single();
+
+    if (error) throw error;
+    autoresRaw.push(data);
+    return data.au_cod;
+}
+
+async function ensureGeneroExists(genero) {
+    if (!supabaseClient || !genero) return;
+    const value = genero.trim();
+    if (!value) return;
+
+    const { data, error } = await supabaseClient
+        .from('genero')
+        .select('ge_genero')
+        .eq('ge_genero', value);
+
+    if (error) throw error;
+    if (data && data.length) return;
+
+    const { error: insertError } = await supabaseClient
+        .from('genero')
+        .insert({ ge_genero: value });
+
+    // Ignorar erro de duplicado
+    if (insertError && insertError.code !== '23505') {
+        throw insertError;
+    }
+}
 
 function initializeAnimations() {
     // Animação dos itens do sidebar
@@ -78,6 +309,11 @@ function initializeAnimations() {
 }
 
 function loadDashboardData() {
+    updateStatValue('stat-total-livros', livros.length);
+    updateStatValue('stat-total-utentes', utentes.length);
+    updateStatValue('stat-requisicoes-ativas', requisicoes.filter(req => req.estado === 'Ativo').length);
+    updateStatValue('stat-livros-disponiveis', getDisponiveisCount());
+
     // Animação dos cards de estatísticas
     anime({
         targets: '.stat-card',
@@ -576,20 +812,42 @@ function filterRequisicoes(filter) {
 }
 
 function devolverLivro(id) {
-    const req = requisicoes.find(r => r.id === id);
-    if (req) {
-        req.dataDevolucao = new Date().toISOString().split('T')[0];
-        req.estado = 'Devolvido';
-        
-        // Atualizar disponibilidade do livro
-        const livro = livros.find(l => l.titulo === req.livro);
-        if (livro) {
-            livro.disponivel = true;
-        }
-        
-        loadRequisicoes();
-        showNotification('Livro devolvido com sucesso!', 'success');
+    if (!supabaseClient) {
+        showNotification('Supabase não configurado.', 'error');
+        return;
     }
+
+    const req = requisicoes.find(r => r.id === id);
+    if (!req) {
+        showNotification('Requisição não encontrada.', 'error');
+        return;
+    }
+
+    const hoje = new Date().toISOString().split('T')[0];
+
+    supabaseClient
+        .from('requisicao')
+        .update({ re_data_devolucao: hoje })
+        .eq('re_cod', id)
+        .then(async ({ error }) => {
+            if (error) throw error;
+
+            const { error: exemplarError } = await supabaseClient
+                .from('livro_exemplar')
+                .update({ lex_disponivel: true })
+                .eq('lex_cod', req.exemplarId);
+
+            if (exemplarError) throw exemplarError;
+
+            await Promise.all([fetchRequisicoesRaw(), fetchExemplaresRaw()]);
+            syncViewState();
+            renderAllSections();
+            showNotification('Livro devolvido com sucesso!', 'success');
+        })
+        .catch((error) => {
+            console.error('Erro ao devolver livro', error);
+            showNotification(`Erro ao devolver livro: ${error.message}`, 'error');
+        });
 }
 
 function viewRequisicao(id) {
@@ -782,23 +1040,32 @@ function getUtenteForm() {
 }
 
 function getRequisicaoForm() {
-    const livrosDisponiveis = livros.filter(l => l.disponivel);
-    
+    const exemplaresDisponiveis = getAvailableExemplares();
+    const utenteOptions = utentes.length
+        ? ['<option value="">Selecione um utente</option>', ...utentes.map(u => `<option value="${u.id}">${u.nome}</option>`)].join('')
+        : '<option value="">Sem utentes registados</option>';
+    const livroOptions = exemplaresDisponiveis.length
+        ? ['<option value="">Selecione um exemplar</option>', ...exemplaresDisponiveis.map(ex => {
+            const titulo = getLivroTitleByExemplar(ex.lex_cod);
+            return `<option value="${ex.lex_cod}">${titulo} (Exemplar #${ex.lex_cod})</option>`;
+        })].join('')
+        : '<option value="">Sem exemplares disponíveis</option>';
+    const utenteDisabledAttr = utentes.length ? '' : 'disabled';
+    const livroDisabledAttr = exemplaresDisponiveis.length ? '' : 'disabled';
+
     return `
         <form onsubmit="addRequisicao(event)">
             <div class="space-y-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Utente</label>
-                    <select name="utente" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500">
-                        <option value="">Selecione um utente</option>
-                        ${utentes.map(u => `<option value="${u.nome}">${u.nome}</option>`).join('')}
+                    <select name="utente" required ${utenteDisabledAttr} class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500">
+                        ${utenteOptions}
                     </select>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Livro Disponível</label>
-                    <select name="livro" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500">
-                        <option value="">Selecione um livro</option>
-                        ${livrosDisponiveis.map(l => `<option value="${l.titulo}">${l.titulo}</option>`).join('')}
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Exemplar disponível</label>
+                    <select name="livro" required ${livroDisabledAttr} class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500">
+                        ${livroOptions}
                     </select>
                 </div>
                 <div>
@@ -807,7 +1074,7 @@ function getRequisicaoForm() {
                 </div>
                 <div class="flex justify-end space-x-3 pt-4">
                     <button type="button" onclick="closeModal()" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200">Cancelar</button>
-                    <button type="submit" class="px-4 py-2 text-sm font-medium text-white crimson-gradient rounded-lg hover:shadow-lg">Criar Requisição</button>
+                    <button type="submit" class="px-4 py-2 text-sm font-medium text-white crimson-gradient rounded-lg hover:shadow-lg" ${(!utentes.length || !exemplaresDisponiveis.length) ? 'disabled' : ''}>Criar Requisição</button>
                 </div>
             </div>
         </form>
@@ -815,117 +1082,217 @@ function getRequisicaoForm() {
 }
 
 // Funções de submit dos formulários
-function addBook(event) {
+async function addBook(event) {
     event.preventDefault();
-    const formData = new FormData(event.target);
-    
-    const newBook = {
-        id: livros.length + 1,
-        titulo: formData.get('titulo'),
-        autor: formData.get('autor'),
-        ano: parseInt(formData.get('ano')),
-        isbn: formData.get('isbn'),
-        genero: formData.get('genero'),
-        disponivel: true
-    };
-    
-    livros.push(newBook);
-    closeModal();
-    loadBooks();
-    showNotification('Livro adicionado com sucesso!', 'success');
-}
-
-function addAutor(event) {
-    event.preventDefault();
-    const formData = new FormData(event.target);
-    
-    const newAutor = {
-        id: autores.length + 1,
-        nome: formData.get('nome'),
-        pais: formData.get('pais') || 'Não especificado',
-        livros: 0
-    };
-    
-    autores.push(newAutor);
-    closeModal();
-    loadAutores();
-    showNotification('Autor adicionado com sucesso!', 'success');
-}
-
-function addEditora(event) {
-    event.preventDefault();
-    const formData = new FormData(event.target);
-    
-    const newEditora = {
-        id: editoras.length + 1,
-        nome: formData.get('nome'),
-        pais: formData.get('pais'),
-        email: formData.get('email') || null,
-        telefone: formData.get('telefone') || null
-    };
-    
-    editoras.push(newEditora);
-    closeModal();
-    loadEditoras();
-    showNotification('Editora adicionada com sucesso!', 'success');
-}
-
-function addUtente(event) {
-    event.preventDefault();
-    const formData = new FormData(event.target);
-    
-    const newUtente = {
-        id: utentes.length + 1,
-        nome: formData.get('nome'),
-        email: formData.get('email'),
-        telefone: formData.get('telefone') || null,
-        nif: formData.get('nif') || null,
-        estado: 'Ativo'
-    };
-    
-    utentes.push(newUtente);
-    closeModal();
-    loadUtentes();
-    showNotification('Utente adicionado com sucesso!', 'success');
-}
-
-function addRequisicao(event) {
-    event.preventDefault();
-    const formData = new FormData(event.target);
-    
-    const utenteNome = formData.get('utente');
-    const livroTitulo = formData.get('livro');
-    
-    // Verificar se o livro está disponível
-    const livro = livros.find(l => l.titulo === livroTitulo);
-    if (!livro || !livro.disponivel) {
-        showNotification('Livro não está disponível!', 'error');
+    if (!supabaseClient) {
+        showNotification('Supabase não configurado.', 'error');
         return;
     }
-    
-    const newReq = {
-        id: requisicoes.length + 1,
-        utente: utenteNome,
-        livro: livroTitulo,
-        dataRequisicao: formData.get('dataRequisicao'),
-        dataDevolucao: null,
-        estado: 'Ativo'
-    };
-    
-    requisicoes.push(newReq);
-    
-    // Atualizar disponibilidade do livro
-    livro.disponivel = false;
-    
-    closeModal();
-    loadRequisicoes();
-    
-    // Se estiver na secção de livros, atualizar a visualização
-    if (currentSection === 'livros') {
-        loadBooks();
+
+    const formData = new FormData(event.target);
+    const titulo = formData.get('titulo')?.trim();
+    const autorNome = formData.get('autor')?.trim();
+    const ano = parseInt(formData.get('ano'), 10);
+    const isbn = formData.get('isbn')?.trim();
+    const genero = formData.get('genero')?.trim();
+
+    if (!titulo) {
+        showNotification('Título é obrigatório.', 'error');
+        return;
     }
-    
-    showNotification('Requisição criada com sucesso!', 'success');
+
+    try {
+        let autorId = null;
+        if (autorNome) {
+            autorId = await ensureAutorExists(autorNome);
+        }
+        if (genero) {
+            await ensureGeneroExists(genero);
+        }
+
+        const { data, error } = await supabaseClient
+            .from('livro')
+            .insert({
+                li_titulo: titulo,
+                li_autor: autorId,
+                li_ano: Number.isFinite(ano) ? ano : null,
+                li_isbn: isbn || null,
+                li_genero: genero || null,
+            })
+            .select('li_cod')
+            .single();
+
+        if (error) throw error;
+
+        await supabaseClient
+            .from('livro_exemplar')
+            .insert({ lex_li_cod: data.li_cod, lex_disponivel: true });
+
+        await Promise.all([fetchLivrosRaw(), fetchAutoresRaw(), fetchExemplaresRaw()]);
+        syncViewState();
+        renderAllSections();
+        closeModal();
+        showNotification('Livro adicionado com sucesso!', 'success');
+    } catch (error) {
+        console.error('Erro ao adicionar livro', error);
+        showNotification(`Erro ao adicionar livro: ${error.message}`, 'error');
+    }
+}
+
+async function addAutor(event) {
+    event.preventDefault();
+    if (!supabaseClient) {
+        showNotification('Supabase não configurado.', 'error');
+        return;
+    }
+
+    const formData = new FormData(event.target);
+    const nome = formData.get('nome')?.trim();
+    const pais = formData.get('pais')?.trim() || null;
+
+    if (!nome) {
+        showNotification('Nome do autor é obrigatório.', 'error');
+        return;
+    }
+
+    try {
+        const { error } = await supabaseClient
+            .from('autor')
+            .insert({ au_nome: nome, au_pais: pais });
+        if (error) throw error;
+
+        await fetchAutoresRaw();
+        syncViewState();
+        renderAllSections();
+        closeModal();
+        showNotification('Autor adicionado com sucesso!', 'success');
+    } catch (error) {
+        console.error('Erro ao adicionar autor', error);
+        showNotification(`Erro ao adicionar autor: ${error.message}`, 'error');
+    }
+}
+
+async function addEditora(event) {
+    event.preventDefault();
+    if (!supabaseClient) {
+        showNotification('Supabase não configurado.', 'error');
+        return;
+    }
+
+    const formData = new FormData(event.target);
+    const nome = formData.get('nome')?.trim();
+    const pais = formData.get('pais')?.trim();
+    const telefone = formData.get('telefone')?.trim();
+    const email = formData.get('email')?.trim();
+
+    if (!nome || !pais) {
+        showNotification('Nome e país são obrigatórios.', 'error');
+        return;
+    }
+
+    try {
+        const { error } = await supabaseClient
+            .from('editora')
+            .insert({
+                ed_nome: nome,
+                ed_pais: pais,
+                ed_tlm: telefone || null,
+                ed_email: email || null,
+            });
+        if (error) throw error;
+
+        await fetchEditorasRaw();
+        syncViewState();
+        renderAllSections();
+        closeModal();
+        showNotification('Editora adicionada com sucesso!', 'success');
+    } catch (error) {
+        console.error('Erro ao adicionar editora', error);
+        showNotification(`Erro ao adicionar editora: ${error.message}`, 'error');
+    }
+}
+
+async function addUtente(event) {
+    event.preventDefault();
+    if (!supabaseClient) {
+        showNotification('Supabase não configurado.', 'error');
+        return;
+    }
+
+    const formData = new FormData(event.target);
+    const nome = formData.get('nome')?.trim();
+    const email = formData.get('email')?.trim();
+    const telefone = formData.get('telefone')?.trim();
+    const nif = formData.get('nif')?.trim();
+
+    if (!nome) {
+        showNotification('Nome do utente é obrigatório.', 'error');
+        return;
+    }
+
+    try {
+        const { error } = await supabaseClient
+            .from('utente')
+            .insert({
+                ut_nome: nome,
+                ut_email: email || null,
+                ut_tlm: telefone || null,
+                ut_nif: nif || null,
+            });
+        if (error) throw error;
+
+        await fetchUtentesRaw();
+        syncViewState();
+        renderAllSections();
+        closeModal();
+        showNotification('Utente adicionado com sucesso!', 'success');
+    } catch (error) {
+        console.error('Erro ao adicionar utente', error);
+        showNotification(`Erro ao adicionar utente: ${error.message}`, 'error');
+    }
+}
+
+async function addRequisicao(event) {
+    event.preventDefault();
+    if (!supabaseClient) {
+        showNotification('Supabase não configurado.', 'error');
+        return;
+    }
+
+    const formData = new FormData(event.target);
+    const utenteId = parseInt(formData.get('utente'), 10);
+    const exemplarId = parseInt(formData.get('livro'), 10);
+    const dataRequisicao = formData.get('dataRequisicao');
+
+    if (!Number.isInteger(utenteId) || !Number.isInteger(exemplarId)) {
+        showNotification('Selecione o utente e o exemplar.', 'error');
+        return;
+    }
+
+    try {
+        const { error } = await supabaseClient
+            .from('requisicao')
+            .insert({
+                re_ut_cod: utenteId,
+                re_lex_cod: exemplarId,
+                re_data_requisicao: dataRequisicao || null,
+            });
+        if (error) throw error;
+
+        await supabaseClient
+            .from('livro_exemplar')
+            .update({ lex_disponivel: false })
+            .eq('lex_cod', exemplarId);
+
+        await Promise.all([fetchRequisicoesRaw(), fetchExemplaresRaw()]);
+        syncViewState();
+        renderAllSections();
+        closeModal();
+        showNotification('Requisição criada com sucesso!', 'success');
+    } catch (error) {
+        console.error('Erro ao criar requisição', error);
+        showNotification(`Erro ao criar requisição: ${error.message}`, 'error');
+    }
 }
 
 // Funções auxiliares
