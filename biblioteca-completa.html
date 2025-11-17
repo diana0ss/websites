@@ -189,7 +189,7 @@
                         <div class="flex items-center justify-between">
                             <div>
                                 <p class="text-sm font-medium text-gray-600 mb-1">Total de Livros</p>
-                                <p class="text-3xl font-bold text-gray-900">1,247</p>
+                                <p class="text-3xl font-bold text-gray-900"><span id="stat-total-livros">0</span></p>
                             </div>
                             <div class="w-12 h-12 bg-red-500 rounded-lg flex items-center justify-center text-white text-xl">
                                 📚
@@ -201,7 +201,7 @@
                         <div class="flex items-center justify-between">
                             <div>
                                 <p class="text-sm font-medium text-gray-600 mb-1">Utentes Registados</p>
-                                <p class="text-3xl font-bold text-gray-900">892</p>
+                                <p class="text-3xl font-bold text-gray-900"><span id="stat-total-utentes">0</span></p>
                             </div>
                             <div class="w-12 h-12 bg-red-400 rounded-lg flex items-center justify-center text-white text-xl">
                                 👥
@@ -213,7 +213,7 @@
                         <div class="flex items-center justify-between">
                             <div>
                                 <p class="text-sm font-medium text-gray-600 mb-1">Requisições Ativas</p>
-                                <p class="text-3xl font-bold text-gray-900">156</p>
+                                <p class="text-3xl font-bold text-gray-900"><span id="stat-requisicoes-ativas">0</span></p>
                             </div>
                             <div class="w-12 h-12 bg-red-300 rounded-lg flex items-center justify-center text-white text-xl">
                                 📖
@@ -225,7 +225,7 @@
                         <div class="flex items-center justify-between">
                             <div>
                                 <p class="text-sm font-medium text-gray-600 mb-1">Livros Disponíveis</p>
-                                <p class="text-3xl font-bold text-gray-900">1,091</p>
+                                <p class="text-3xl font-bold text-gray-900"><span id="stat-livros-disponiveis">0</span></p>
                             </div>
                             <div class="w-12 h-12 bg-red-200 rounded-lg flex items-center justify-center text-xl">
                                 📖
@@ -557,6 +557,7 @@
         </div>
     </div>
 
+    <script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
     <script src="biblioteca-script.js"></script>
 </body>
 </html>
