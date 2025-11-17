@@ -189,7 +189,7 @@
                         <div class="flex items-center justify-between">
                             <div>
                                 <p class="text-sm font-medium text-gray-600 mb-1">Total de Livros</p>
-                                <p class="text-3xl font-bold text-gray-900">1,247</p>
+                                <p class="text-3xl font-bold text-gray-900"><span id="stat-total-livros">0</span></p>
                             </div>
                             <div class="w-12 h-12 bg-red-500 rounded-lg flex items-center justify-center text-white text-xl">
                                 📚
@@ -201,7 +201,7 @@
                         <div class="flex items-center justify-between">
                             <div>
                                 <p class="text-sm font-medium text-gray-600 mb-1">Utentes Registados</p>
-                                <p class="text-3xl font-bold text-gray-900">892</p>
+                                <p class="text-3xl font-bold text-gray-900"><span id="stat-total-utentes">0</span></p>
                             </div>
                             <div class="w-12 h-12 bg-red-400 rounded-lg flex items-center justify-center text-white text-xl">
                                 👥
@@ -213,7 +213,7 @@
                         <div class="flex items-center justify-between">
                             <div>
                                 <p class="text-sm font-medium text-gray-600 mb-1">Requisições Ativas</p>
-                                <p class="text-3xl font-bold text-gray-900">156</p>
+                                <p class="text-3xl font-bold text-gray-900"><span id="stat-requisicoes-ativas">0</span></p>
                             </div>
                             <div class="w-12 h-12 bg-red-300 rounded-lg flex items-center justify-center text-white text-xl">
                                 📖
@@ -225,7 +225,7 @@
                         <div class="flex items-center justify-between">
                             <div>
                                 <p class="text-sm font-medium text-gray-600 mb-1">Livros Disponíveis</p>
-                                <p class="text-3xl font-bold text-gray-900">1,091</p>
+                                <p class="text-3xl font-bold text-gray-900"><span id="stat-livros-disponiveis">0</span></p>
                             </div>
                             <div class="w-12 h-12 bg-red-200 rounded-lg flex items-center justify-center text-xl">
                                 📖
@@ -269,6 +269,35 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Recent Activity -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                    <h2 class="serif-font text-2xl font-bold text-gray-900 mb-4">Atividade Recente</h2>
+                    <div class="space-y-4">
+                        <div class="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
+                            <div class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                                <span class="text-red-600">📚</span>
+                            </div>
+                            <div class="flex-1">
+                                <p class="font-medium text-gray-900">Sistema iniciado com sucesso</p>
+                                <p class="text-sm text-gray-600">Todos os módulos estão funcionando corretamente</p>
+                            </div>
+                            <span class="text-sm text-gray-500">Agora</span>
+                        </div>
+
+                        <div class="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
+                            <div class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                                <span class="text-red-600">✅</span>
+                            </div>
+                            <div class="flex-1">
+                                <p class="font-medium text-gray-900">Base de dados conectada</p>
+                                <p class="text-sm text-gray-600">Conexão com Supabase estabelecida</p>
+                            </div>
+                            <span class="text-sm text-gray-500">Agora</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <!-- Livros Section -->
             <div id="livros" class="main-content hidden">
@@ -363,7 +392,7 @@
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
                     <div>
                         <h1 class="serif-font text-3xl font-bold text-gray-900 mb-2">Gestão de Editoras</h1>
-                        <p class="text-gray-600">Gerir as editoras da biblioteca</p>
+                        <p class="text-gray-600">Gerir as editoras do acervo da biblioteca</p>
                     </div>
                     <button onclick="openModal('add-editora')" class="mt-4 sm:mt-0 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white crimson-gradient hover:shadow-lg transition-all duration-200">
                         <span class="mr-2">➕</span>
@@ -528,6 +557,7 @@
         </div>
     </div>
 
+    <script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
     <script src="biblioteca-script.js"></script>
 </body>
 </html>
